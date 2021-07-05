@@ -20,8 +20,12 @@ filesystem =
             $ fromFoldable
                 [ Folder "minecraft"
                     $ fromFoldable
-                        [ File "ember.txt" ""
-                        , File "cosmos.txt" ""
+                        [ Folder "utility_mods"
+                            $ fromFoldable
+                                [ File "ember.txt" ""
+                                , File "cosmos.txt" ""
+                                ]
+                        , File "kyra.txt" ""
                         , File "galaxy.txt" ""
                         ]
                 , Folder "websites"

@@ -1,23 +1,34 @@
 module Argument.Path
   ( Path
   , Relative
-  , pathToLocation
+  , translatePath
+  , translatePathToFile
+  , translatePathToFolder
   ) where
 
 import Prelude
 import Argument.Argument (class Argument)
-import Data.List (List(..), fromFoldable)
+import Data.List (List(..), fromFoldable, init, last)
 import Data.Maybe (Maybe(..))
 import Data.String (Pattern(..), codePointFromChar, split, uncons)
-import Filesystem (Filesystem, Location, emptyLocation, moveLocation)
+import Data.Tuple (Tuple(..))
+import Filesystem (FilePath, Filesystem, Location, emptyLocation, getFromFilesystem, mkFilePath, moveLocation)
 
 data Path
   = Path Relative (List String)
+
+instance showPath :: Show Path where
+  show (Path rel strs) = append "Path " (append (append (show rel) " ") (show strs))
 
 data Relative
   = Root
   | Up Int -- Implement
   | Current
+
+instance showRelative :: Show Relative where
+  show Root = "Root"
+  show Current = "Current"
+  show (Up i) = append "Up " (show i)
 
 instance argumentPath :: Argument Path where
   parse "/" = Just $ Path Root Nil
@@ -34,9 +45,26 @@ instance argumentPath :: Argument Path where
     Just _ -> Just $ Path Current (fromFoldable $ split (Pattern "/") x)
   complete _ = Nil
 
-pathToLocation :: Filesystem -> Location -> Path -> Maybe Location
-pathToLocation fs _ (Path Root path) = moveLocation fs emptyLocation path
+translatePath :: Filesystem -> Location -> Path -> Tuple (Maybe Location) (Maybe FilePath)
+translatePath fs loc p = Tuple (translatePathToFolder fs loc p) (translatePathToFile fs loc p)
 
-pathToLocation fs loc (Path Current path) = moveLocation fs loc path
+translatePathToFolder :: Filesystem -> Location -> Path -> Maybe Location
+translatePathToFolder fs _ (Path Root path) = moveLocation fs emptyLocation path
 
-pathToLocation _ _ (Path (Up _) _) = Nothing -- Implement
+translatePathToFolder fs loc (Path Current path) = moveLocation fs loc path
+
+translatePathToFolder _ _ (Path (Up _) _) = Nothing -- Implement
+
+translatePathToFile :: Filesystem -> Location -> Path -> Maybe FilePath
+translatePathToFile fs _ (Path Root (Cons filename Nil)) = mkFilePath fs emptyLocation filename
+
+translatePathToFile fs loc (Path Current (Cons filename Nil)) = mkFilePath fs loc filename
+
+translatePathToFile fs loc (Path Current path) = join $ mkFilePath <$> Just fs <*> (init path >>= moveLocation fs loc) <*> last path
+  where
+  fsloc :: Maybe Filesystem
+  fsloc = getFromFilesystem <$> Just fs <*> (init path >>= moveLocation fs emptyLocation)
+
+translatePathToFile fs _ (Path Root path) = translatePathToFile fs emptyLocation (Path Current path)
+
+translatePathToFile _ _ (Path (Up _) _) = Nothing -- Implement
