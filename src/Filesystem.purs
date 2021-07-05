@@ -14,15 +14,15 @@ import Data.List (List(..), snoc)
 import Data.Maybe (Maybe(..))
 import Data.Tuple (Tuple(..), uncurry)
 import Partial.Unsafe (unsafePartial)
-import Prelude (class Show, append, otherwise, show, ($), (==), (>>=))
+import Prelude (class Show, append, otherwise, show, ($), (==), (>>=), (<>))
 
 data Filesystem
   = Folder String (List Filesystem) -- Name Children
   | File String String -- Name Contents
 
 instance filesystemShow :: Show Filesystem where
-  show (Folder name fss) = append (append (append "Folder " $ show name) " ") $ show fss
-  show (File name _) = (append "File " $ show name)
+  show (Folder name fss) = "Folder " <> show name <> " " <> show fss
+  show (File name _) = "File " <> show name
 
 newtype Location
   = Location (List String)
@@ -31,10 +31,10 @@ data FilePath
   = FilePath Location String
 
 instance locationShow :: Show Location where
-  show (Location strs) = append "Location " $ show strs
+  show (Location strs) = "Location " <> show strs
 
 instance filePathShow :: Show FilePath where
-  show (FilePath loc file) = append (append (append "FilePath " $ show loc) " ") file
+  show (FilePath loc file) = "FilePath " <> show loc <> " " <> file
 
 emptyLocation :: Location
 emptyLocation = Location Nil

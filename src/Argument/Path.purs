@@ -8,9 +8,10 @@ module Argument.Path
 
 import Prelude
 import Argument.Argument (class Argument, parse, toString)
-import Data.List (List(..), fromFoldable, init, last, intercalate)
+import Data.List (List(..), filter, fromFoldable, init, intercalate, last)
 import Data.Maybe (Maybe(..))
 import Data.String (Pattern(..), codePointFromChar, split, uncons)
+import Data.String.Utils (startsWith)
 import Data.Tuple (Tuple(..), fst)
 import Filesystem (FilePath, Filesystem(..), Location, emptyLocation, getFromFilesystem, mkFilePath, moveLocation)
 import Main (filesystem)
@@ -19,7 +20,7 @@ data Path
   = Path Relative (List String)
 
 instance showPath :: Show Path where
-  show (Path rel strs) = append "Path " (append (append (show rel) " ") (show strs))
+  show (Path rel strs) = "Path " <> show rel <> " " <> show strs
 
 data Relative
   = Root
@@ -29,7 +30,7 @@ data Relative
 instance showRelative :: Show Relative where
   show Root = "Root"
   show Current = "Current"
-  show (Up i) = append "Up " (show i)
+  show (Up i) = "Up " <> (show i)
 
 instance argumentPath :: Argument Path where
   parse "/" = Just $ Path Root Nil
@@ -45,15 +46,44 @@ instance argumentPath :: Argument Path where
     Nothing -> Nothing
     Just _ -> Just $ Path Current (fromFoldable $ split (Pattern "/") x)
   complete { filesystem, location } str = case folder of
+    Just (Folder _ fsarr) -> map makePath $ (names fsarr)
     _ -> Nil
     where
-    path = (intercalate <$> Just "/" <*> (init $ fromFoldable splitStr)) >>= parse :: Maybe Path
+    path :: Maybe Path
+    path = (intercalate <$> Just "/" <*> (init $ fromFoldable splitStr)) >>= parse
 
-    folder = path >>= (fst <<< (translatePath filesystem location)) >>= (getFromFilesystem filesystem)
+    rel :: Maybe Relative
+    rel = case path of
+      Just (Path r _) -> Just r
+      Nothing -> Nothing
+
+    folder :: Maybe Filesystem
+    folder = getFromFilesystem <$> Just filesystem <*> (path >>= translatePathToFolder filesystem location)
+
+    makePath :: String -> Maybe Path
+    makePath file =
+      path
+        >>= ( \path' -> case path' of
+              (Path x y) -> pure $ Path x (y <> Cons file Nil)
+          )
+
+    names :: List Filesystem -> List String
+    names fsarr =
+      filter
+        ( \x -> case startsWith <$> (last $ fromFoldable splitStr) <*> Just x of
+            Just x' -> x'
+            _ -> (1 /= 1)
+        )
+        $ map
+            ( \x -> case x of
+                Folder x _ -> x
+                File x _ -> x
+            )
+            fsarr
 
     splitStr = split (Pattern "/") str
   toString (Path Current path) = Cons (intercalate "/" path) Nil
-  toString (Path Root path) = Cons (append "/" $ intercalate "/" path) (Cons (append "~/" $ intercalate "/" path) Nil)
+  toString (Path Root path) = Cons ("/" <> intercalate "/" path) (Cons ("~/" <> intercalate "/" path) Nil)
   toString (Path (Up _) _) = Nil -- Implement
 
 translatePath :: Filesystem -> Location -> Path -> Tuple (Maybe Location) (Maybe FilePath)

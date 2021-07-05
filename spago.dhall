@@ -21,6 +21,7 @@ to generate this file without the comments in this block.
   , "prelude"
   , "psci-support"
   , "strings"
+  , "stringutils"
   , "tuples"
   ]
 , packages = ./packages.dhall
