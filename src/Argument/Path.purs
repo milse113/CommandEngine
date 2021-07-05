@@ -7,12 +7,13 @@ module Argument.Path
   ) where
 
 import Prelude
-import Argument.Argument (class Argument)
-import Data.List (List(..), fromFoldable, init, last)
+import Argument.Argument (class Argument, parse, toString)
+import Data.List (List(..), fromFoldable, init, last, intercalate)
 import Data.Maybe (Maybe(..))
 import Data.String (Pattern(..), codePointFromChar, split, uncons)
-import Data.Tuple (Tuple(..))
-import Filesystem (FilePath, Filesystem, Location, emptyLocation, getFromFilesystem, mkFilePath, moveLocation)
+import Data.Tuple (Tuple(..), fst)
+import Filesystem (FilePath, Filesystem(..), Location, emptyLocation, getFromFilesystem, mkFilePath, moveLocation)
+import Main (filesystem)
 
 data Path
   = Path Relative (List String)
@@ -43,7 +44,17 @@ instance argumentPath :: Argument Path where
         _ -> Nothing
     Nothing -> Nothing
     Just _ -> Just $ Path Current (fromFoldable $ split (Pattern "/") x)
-  complete _ = Nil
+  complete { filesystem, location } str = case folder of
+    _ -> Nil
+    where
+    path = (intercalate <$> Just "/" <*> (init $ fromFoldable splitStr)) >>= parse :: Maybe Path
+
+    folder = path >>= (fst <<< (translatePath filesystem location)) >>= (getFromFilesystem filesystem)
+
+    splitStr = split (Pattern "/") str
+  toString (Path Current path) = Cons (intercalate "/" path) Nil
+  toString (Path Root path) = Cons (append "/" $ intercalate "/" path) (Cons (append "~/" $ intercalate "/" path) Nil)
+  toString (Path (Up _) _) = Nil -- Implement
 
 translatePath :: Filesystem -> Location -> Path -> Tuple (Maybe Location) (Maybe FilePath)
 translatePath fs loc p = Tuple (translatePathToFolder fs loc p) (translatePathToFile fs loc p)

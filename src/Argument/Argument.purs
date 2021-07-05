@@ -2,11 +2,14 @@ module Argument.Argument where
 
 import Data.List (List(..))
 import Data.Maybe (Maybe(..))
+import Main (State)
 
 class Argument a where
   parse :: String -> Maybe a
-  complete :: String -> List a
+  complete :: State -> String -> List a
+  toString :: a -> List String
 
 instance argumentString :: Argument String where
   parse x = Just x
-  complete _ = Nil
+  complete _ _ = Nil
+  toString x = Cons x Nil

@@ -4,7 +4,7 @@ module Argument.Word
 
 import Prelude
 import Argument.Argument (class Argument)
-import Data.List (List(..))
+import Data.List (List(..), fromFoldable)
 import Data.Maybe (Maybe(..))
 import Data.String (Pattern(..), contains, trim)
 
@@ -15,4 +15,5 @@ instance argumentWord :: Argument Word where
   parse x
     | Pattern (trim x) `contains` " " = Nothing
     | otherwise = Just $ Word x
-  complete _ = Nil
+  complete _ _ = Nil
+  toString (Word x) = fromFoldable [ x ]
