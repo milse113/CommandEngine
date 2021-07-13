@@ -10,6 +10,6 @@ data Echo
   = Echo String
 
 instance commandEcho :: Command Echo where
-  parse x = Just $ Echo x
+  parseCommand x = Just $ Echo x
   run s (Echo x) = Tuple s x
   autocomplete _ = Nil

@@ -14,7 +14,7 @@ import Data.List (List(..), snoc)
 import Data.Maybe (Maybe(..))
 import Data.Tuple (Tuple(..), uncurry)
 import Partial.Unsafe (unsafePartial)
-import Prelude (class Show, append, otherwise, show, ($), (==), (>>=), (<>))
+import Prelude (class Show, otherwise, show, ($), (<>), (==), (>>=))
 
 data Filesystem
   = Folder String (List Filesystem) -- Name Children

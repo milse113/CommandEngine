@@ -2,7 +2,7 @@ module Argument.Argument where
 
 import Data.List (List(..))
 import Data.Maybe (Maybe(..))
-import Main (State)
+import State (State)
 
 class Argument a where
   parse :: String -> Maybe a
