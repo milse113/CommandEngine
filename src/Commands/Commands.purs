@@ -2,6 +2,7 @@ module Command.Commands
   ( runCommand 
   , completeCommand
   , completeCommand'
+  , fullComplete
   ) where
 
 import Prelude
@@ -44,3 +45,12 @@ completeCommand x = toUnfoldable $ filter (startsWith x) (keys commands)
 completeCommand' :: String -> List String
 completeCommand' "" = Nil
 completeCommand' x = completeCommand x
+
+fullComplete :: String -> List String
+fullComplete x = case split (Pattern " ") x of
+  [] -> completeCommand' ""
+  [x'] -> completeCommand' x'
+  x' -> completeCommand' ""
+  -- (Cons x' xs) -> case lookup x' commands of
+  --  Just x -> completeCommand' ""
+  --  Nothing -> completeCommand' ""
