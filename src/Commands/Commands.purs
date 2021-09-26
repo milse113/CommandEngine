@@ -1,6 +1,7 @@
 module Command.Commands
   ( runCommand 
   , completeCommand
+  , completeCommand'
   ) where
 
 import Prelude
@@ -9,7 +10,7 @@ import Command.Commands.Cd (Cd)
 import Command.Commands.Echo (Echo)
 import Command.Commands.Command (parseCommand, run)
 import Data.Array (tail, (!!))
-import Data.List (List)
+import Data.List (List(..))
 import Data.Map (Map, fromFoldable, keys, lookup)
 import Data.Maybe (Maybe(..))
 import Data.Set (filter, toUnfoldable)
@@ -39,3 +40,7 @@ runCommand s x = case split (Pattern " ") x !! 0 of
 
 completeCommand :: String -> List String
 completeCommand x = toUnfoldable $ filter (startsWith x) (keys commands)
+
+completeCommand' :: String -> List String
+completeCommand' "" = Nil
+completeCommand' x = completeCommand x
