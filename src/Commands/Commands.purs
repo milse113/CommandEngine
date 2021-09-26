@@ -20,7 +20,8 @@ import Command.State (State)
 
 commands :: Map String (State -> String -> Tuple State String)
 commands = fromFoldable $
-  [ Tuple "cd" $ \s x -> case join $ parseCommand <$> (joinWith <$> Just " " <*> (tail $ split (Pattern " ") x)) :: Maybe Cd of
+  [ Tuple "clear" $ \s _ -> Tuple s "" -- Dummy clear command; actually handled by the terminal
+  , Tuple "cd" $ \s x -> case join $ parseCommand <$> (joinWith <$> Just " " <*> (tail $ split (Pattern " ") x)) :: Maybe Cd of
       Just c -> run s c
       Nothing -> Tuple s "cd: invalid command"
   , Tuple "echo" $ \s x -> case join $ parseCommand <$> (joinWith <$> Just " " <*> (tail $ split (Pattern " ") x)) :: Maybe Echo of
