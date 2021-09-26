@@ -6,6 +6,7 @@ module Command.Commands
 import Prelude
 
 import Command.Commands.Cd (Cd)
+import Command.Commands.Echo (Echo)
 import Command.Commands.Command (parseCommand, run)
 import Data.Array (tail, (!!))
 import Data.List (List)
@@ -22,6 +23,9 @@ commands = fromFoldable $
   [ Tuple "cd" $ \s x -> case join $ parseCommand <$> (joinWith <$> Just " " <*> (tail $ split (Pattern " ") x)) :: Maybe Cd of
       Just c -> run s c
       Nothing -> Tuple s "cd: invalid command"
+  , Tuple "echo" $ \s x -> case join $ parseCommand <$> (joinWith <$> Just " " <*> (tail $ split (Pattern " ") x)) :: Maybe Echo of
+      Just e -> run s e
+      Nothing -> Tuple s "echo: invalid command"
   ]
 
 runCommand :: State -> String -> Tuple State String
