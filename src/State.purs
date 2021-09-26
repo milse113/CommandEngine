@@ -1,4 +1,4 @@
-module State
+module Command.State
   ( State
   , newState
   , craftState
@@ -11,7 +11,7 @@ module State
 
 import Prelude
 
-import Filesystem (Filesystem, Location, emptyLocation)
+import Command.Filesystem (Filesystem, Location, emptyLocation)
 
 type State
   = { filesystem :: Filesystem

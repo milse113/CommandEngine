@@ -1,8 +1,8 @@
-module Argument.Argument where
+module Command.Argument.Argument where
 
 import Data.List (List(..))
 import Data.Maybe (Maybe(..))
-import State (State)
+import Command.State (State)
 
 class Argument a where
   parse :: String -> Maybe a

@@ -1,4 +1,4 @@
-module Filesystem
+module Command.Filesystem
   ( Filesystem(..)
   , Location
   , FilePath

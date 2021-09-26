@@ -1,12 +1,12 @@
-module Commands.Commands
+module Command.Commands
   ( runCommand 
   , completeCommand
   ) where
 
 import Prelude
 
-import Commands.Cd (Cd)
-import Commands.Command (parseCommand, run)
+import Command.Commands.Cd (Cd)
+import Command.Commands.Command (parseCommand, run)
 import Data.Array (tail, (!!))
 import Data.List (List)
 import Data.Map (Map, fromFoldable, keys, lookup)
@@ -15,7 +15,7 @@ import Data.Set (filter, toUnfoldable)
 import Data.String (Pattern(..), joinWith, split)
 import Data.String.Utils (startsWith)
 import Data.Tuple (Tuple(..))
-import State (State)
+import Command.State (State)
 
 commands :: Map String (State -> String -> Tuple State String)
 commands = fromFoldable $

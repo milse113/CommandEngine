@@ -1,4 +1,4 @@
-module Argument.Path
+module Command.Argument.Path
   ( Path
   , Relative
   , translatePath
@@ -9,14 +9,14 @@ module Argument.Path
 
 import Prelude
 
-import Argument.Argument (class Argument, parse)
+import Command.Argument.Argument (class Argument, parse)
 import Data.List (List(..), catMaybes, filter, fromFoldable, init, intercalate, last)
 import Data.Maybe (Maybe(..))
 import Data.String (Pattern(..), codePointFromChar, split, uncons)
 import Data.String.Utils (startsWith)
 import Data.Tuple (Tuple(..))
-import Filesystem (FilePath, Filesystem(..), Location, emptyLocation, getFromFilesystem, mkFilePath, moveLocation)
-import State (State, craftState, newState)
+import Command.Filesystem (FilePath, Filesystem(..), Location, emptyLocation, getFromFilesystem, mkFilePath, moveLocation)
+import Command.State (State, craftState, newState)
 
 data Path
   = Path Relative (List String)

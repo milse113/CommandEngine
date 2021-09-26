@@ -1,6 +1,6 @@
-module Commands.Echo where
+module Command.Commands.Echo where
 
-import Commands.Command
+import Command.Commands.Command
 import Data.List (List(..))
 import Data.Maybe (Maybe(..))
 import Data.Tuple (Tuple(..))

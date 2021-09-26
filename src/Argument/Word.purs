@@ -1,9 +1,9 @@
-module Argument.Word
+module Command.Argument.Word
   ( Word
   ) where
 
 import Prelude
-import Argument.Argument (class Argument)
+import Command.Argument.Argument (class Argument)
 import Data.List (List(..), fromFoldable)
 import Data.Maybe (Maybe(..))
 import Data.String (Pattern(..), contains, trim)

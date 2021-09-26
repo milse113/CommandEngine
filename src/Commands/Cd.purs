@@ -1,19 +1,19 @@
-module Commands.Cd
+module Command.Commands.Cd
   ( Cd
   ) where
 
 import Prelude
 
-import Argument.Argument (parse)
-import Argument.Path (Path, translatePathToFolder, validatePath)
-import Commands.Command (class Command)
+import Command.Argument.Argument (parse)
+import Command.Argument.Path (Path, translatePathToFolder, validatePath)
+import Command.Commands.Command (class Command)
 import Data.Array (index, length)
 import Data.List (List(..))
 import Data.Maybe (Maybe(..))
 import Data.String (Pattern(..), split)
 import Data.Tuple (Tuple(..))
 import Partial.Unsafe (unsafePartial)
-import State (setLocation)
+import Command.State (setLocation)
 
 data Cd
   = Cd Path
